@@ -38,25 +38,43 @@ gomoku/
 
 
 Код (все файлы):
-src/core/Error.h
-src/core/Types.h
-src/core/Board.h
-src/core/Board.cpp
-src/core/GameState.h
-src/ui/Presenter.h
-src/core/Player.h
-src/ai/IStrategy.h
-src/ai/RandomStrategy.h
-src/ai/RandomStrategy.cpp
-src/ai/GreedyStrategy.h
-src/ai/GreedyStrategy.cpp
-src/ai/MinimaxStrategy.h
-src/ai/MinimaxStrategy.cpp
-src/core/Game.h
-src/core/Game.cpp
-src/ui/RaylibPresenter.h
-src/ui/RaylibPresenter.cpp
-src/main.cpp
+1)src/core/Error.h
+
+2)src/core/Types.h
+
+3)src/core/Board.h
+
+4)src/core/Board.cpp
+
+5)src/core/GameState.h
+
+6)src/ui/Presenter.h
+
+7)src/core/Player.h
+
+8)src/ai/IStrategy.h
+
+9)src/ai/RandomStrategy.h
+
+10)src/ai/RandomStrategy.cpp
+
+11)src/ai/GreedyStrategy.h
+
+12)src/ai/GreedyStrategy.cpp
+
+13)src/ai/MinimaxStrategy.h
+
+14)src/ai/MinimaxStrategy.cpp
+
+15)src/core/Game.h
+
+16)src/core/Game.cpp
+
+17)src/ui/RaylibPresenter.h
+
+18)src/ui/RaylibPresenter.cpp
+
+19)src/main.cpp
 
 
 

@@ -15,6 +15,7 @@ public:
 
     void showMessage(const char* msg);
     int shouldQuit() const;
+    int shouldMenu() const; // NEW
 
 private:
     int winW_;

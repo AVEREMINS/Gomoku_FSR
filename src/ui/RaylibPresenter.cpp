@@ -19,6 +19,11 @@ int RaylibPresenter::shouldQuit() const {
     return 0;
 }
 
+int RaylibPresenter::shouldMenu() const {
+    if (IsKeyPressed(KEY_ENTER)) return 1;
+    return 0;
+}
+
 void RaylibPresenter::showMessage(const char* msg) {
     if (msg == 0) { msg_[0] = 0; msgFrames_ = 0; return; }
     snprintf(msg_, sizeof(msg_), "%s", msg);
@@ -73,27 +78,27 @@ void RaylibPresenter::selectSettings(Cell* humanColor, int* difficulty) {
 
         DrawText("GOMOKU", 420, 70, 40, DARKGRAY);
 
-        DrawText("Цвет:", 200, 160, 24, GRAY);
-        DrawText("[B] Чёрные (первый ход)", 240, 200, 22, DARKGRAY);
-        DrawText("[W] Белые", 240, 230, 22, DARKGRAY);
+        DrawText("Color:", 200, 160, 24, GRAY);
+        DrawText("[B] Black (first move)", 240, 200, 22, DARKGRAY);
+        DrawText("[W] White", 240, 230, 22, DARKGRAY);
 
-        DrawText("Сложность ИИ:", 200, 300, 24, GRAY);
-        DrawText("[1] Easy  (Random)", 240, 340, 22, DARKGRAY);
+        DrawText("AI Difficulty:", 200, 300, 24, GRAY);
+        DrawText("[1] Easy   (Random)", 240, 340, 22, DARKGRAY);
         DrawText("[2] Medium (Greedy)", 240, 370, 22, DARKGRAY);
-        DrawText("[3] Hard (Minimax)", 240, 400, 22, DARKGRAY);
+        DrawText("[3] Hard   (Minimax)", 240, 400, 22, DARKGRAY);
 
         char buf1[64];
         char buf2[64];
 
-        if (*humanColor == CELL_BLACK) snprintf(buf1, sizeof(buf1), "Вы выбрали: Чёрные");
-        else snprintf(buf1, sizeof(buf1), "Вы выбрали: Белые");
+        if (*humanColor == CELL_BLACK) snprintf(buf1, sizeof(buf1), "Selected: Black");
+        else snprintf(buf1, sizeof(buf1), "Selected: White");
 
-        snprintf(buf2, sizeof(buf2), "Сложность: %d", *difficulty);
+        snprintf(buf2, sizeof(buf2), "Difficulty: %d", *difficulty);
 
         DrawText(buf1, 240, 470, 22, MAROON);
         DrawText(buf2, 240, 500, 22, MAROON);
 
-        DrawText("ENTER — начать, ESC — выход", 240, 570, 22, DARKGREEN);
+        DrawText("ENTER - start, ESC - quit", 240, 570, 22, DARKGREEN);
 
         EndDrawing();
 
@@ -107,7 +112,7 @@ void RaylibPresenter::selectSettings(Cell* humanColor, int* difficulty) {
         if (IsKeyPressed(KEY_ENTER)) done = 1;
     }
 
-    if (shouldQuit()) throw PresenterError("Выход из меню.");
+    if (shouldQuit()) throw PresenterError("Exit from menu.");
 }
 
 void RaylibPresenter::draw(const GameState& s, const char* status) {
@@ -118,7 +123,7 @@ void RaylibPresenter::draw(const GameState& s, const char* status) {
 
     if (status != 0) DrawText(status, 20, 15, 20, DARKGRAY);
 
-    const char* turnText = (s.turn == CELL_BLACK) ? "Ход: ЧЁРНЫЕ" : "Ход: БЕЛЫЕ";
+    const char* turnText = (s.turn == CELL_BLACK) ? "Turn: BLACK" : "Turn: WHITE";
     DrawText(turnText, 20, 42, 20, DARKGRAY);
 
     if (msgFrames_ > 0) {
@@ -176,7 +181,7 @@ Move RaylibPresenter::pollHumanMove(const GameState& s) {
 
     int got = 0;
     while (!shouldQuit() && !got) {
-        draw(s, "Gomoku: 5 в ряд. ЛКМ — ход. ESC — выход.");
+        draw(s, "Gomoku: five in a row. LMB - move. ESC - quit.");
 
         if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
             Move tmp;
@@ -188,6 +193,6 @@ Move RaylibPresenter::pollHumanMove(const GameState& s) {
         }
     }
 
-    if (shouldQuit()) throw PresenterError("Выход во время ожидания хода.");
+    if (shouldQuit()) throw PresenterError("Exit while waiting for human move.");
     return m;
 }

@@ -47,7 +47,7 @@ void Game::setupPlayers(Presenter& presenter) {
 
 void Game::applyMoveOrThrow(const Move& m) {
     if (!s_.board.isLegal(m)) {
-        throw InvalidMoveError("Неверный ход: клетка занята или вне доски.");
+        throw InvalidMoveError("Invalid move: out of bounds or cell is occupied.");
     }
     s_.board.place(m, s_.turn);
     s_.history[s_.historyCount] = m;
@@ -55,40 +55,65 @@ void Game::applyMoveOrThrow(const Move& m) {
 }
 
 void Game::run(Presenter& presenter) {
-    setupPlayers(presenter);
+    char status[160];
 
-    char status[128];
-    setStatus(status, 128, "Gomoku: 5 в ряд. ЛКМ — ход. ESC — выход.");
+    int quitAll = 0;
 
-    int gameOver = 0;
-
-    while (!presenter.shouldQuit() && !gameOver) {
-        presenter.draw(s_, status);
-
-        Player* cur = (s_.turn == CELL_BLACK) ? pBlack_ : pWhite_;
-
-        try {
-            Move m = cur->getMove(s_, presenter);
-            applyMoveOrThrow(m);
-
-            if (s_.board.checkWinFrom(m, s_.turn)) {
-                if (s_.turn == CELL_BLACK) setStatus(status, 128, "ПОБЕДА: ЧЁРНЫЕ");
-                else setStatus(status, 128, "ПОБЕДА: БЕЛЫЕ");
-                presenter.showMessage("Игра окончена. ESC — выход.");
-                gameOver = 1;
-            } else if (s_.board.full()) {
-                setStatus(status, 128, "НИЧЬЯ");
-                presenter.showMessage("Ничья. ESC — выход.");
-                gameOver = 1;
-            } else {
-                s_.turn = Opponent(s_.turn);
-            }
-        } catch (const InvalidMoveError& e) {
-            presenter.showMessage(e.what());
+    while (!presenter.shouldQuit() && !quitAll) {
+        // reset game state for a new match
+        {
+            int n = s_.board.size();
+            s_ = GameState(n);
         }
-    }
 
-    while (!presenter.shouldQuit()) {
-        presenter.draw(s_, status);
+        // show menu and create players
+        try {
+            setupPlayers(presenter);
+        } catch (const PresenterError&) {
+            quitAll = 1;
+        }
+
+        if (quitAll) {
+            // do nothing, will exit
+        } else {
+            setStatus(status, 160, "Gomoku: five in a row. LMB - move. ESC - quit.");
+
+            int gameOver = 0;
+            while (!presenter.shouldQuit() && !gameOver) {
+                presenter.draw(s_, status);
+
+                Player* cur = (s_.turn == CELL_BLACK) ? pBlack_ : pWhite_;
+
+                try {
+                    Move m = cur->getMove(s_, presenter);
+                    applyMoveOrThrow(m);
+
+                    if (s_.board.checkWinFrom(m, s_.turn)) {
+                        if (s_.turn == CELL_BLACK) {
+                            setStatus(status, 160, "BLACK wins! ENTER - main menu, ESC - quit.");
+                        } else {
+                            setStatus(status, 160, "WHITE wins! ENTER - main menu, ESC - quit.");
+                        }
+                        gameOver = 1;
+                    } else if (s_.board.full()) {
+                        setStatus(status, 160, "DRAW! ENTER - main menu, ESC - quit.");
+                        gameOver = 1;
+                    } else {
+                        s_.turn = Opponent(s_.turn);
+                    }
+                } catch (const InvalidMoveError& e) {
+                    presenter.showMessage(e.what());
+                }
+            }
+
+            // end screen: wait ENTER -> menu, ESC -> quit
+            if (!presenter.shouldQuit()) {
+                int backToMenu = 0;
+                while (!presenter.shouldQuit() && !backToMenu) {
+                    presenter.draw(s_, status);
+                    if (presenter.shouldMenu()) backToMenu = 1;
+                }
+            }
+        }
     }
 }

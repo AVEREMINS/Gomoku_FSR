@@ -11,4 +11,7 @@ public:
 
     virtual void showMessage(const char* msg) = 0;
     virtual int shouldQuit() const = 0;
+
+    // NEW: used on end-screen to return to main menu
+    virtual int shouldMenu() const = 0; // ENTER pressed
 };
